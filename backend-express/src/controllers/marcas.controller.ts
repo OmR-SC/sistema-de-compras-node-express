@@ -1,7 +1,17 @@
-import { Request, Response } from "express";
-import { getAllMarcas, getOneMarca, insertMarca, removeMarca, updateMarca } from "../services/marcasService";
+import { NextFunction, Request, Response } from "express";
+import {
+  getAllMarcas,
+  getOneMarca,
+  insertMarca,
+  removeMarca,
+  updateMarca,
+} from "../services/marcasService";
 
-export const getMarcas = async (_req: Request, res: Response) => {
+export const getMarcas = async (
+  _req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const response = await getAllMarcas();
     res.status(200).json({
@@ -9,25 +19,32 @@ export const getMarcas = async (_req: Request, res: Response) => {
       data: { marcas: response },
     });
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 };
 
-export const getMarca = async(req: Request, res: Response) => {
+export const getMarca = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
-    const id = parseInt(req.params.id)
+    const id = parseInt(req.params.id);
     const response = await getOneMarca(id);
     res.status(200).json({
       status: "OK",
       data: { marca: response },
     });
   } catch (error) {
-    console.log(error);
-    
+    next(error);
   }
 };
 
-export const postMarca = async(req: Request, res: Response) => {
+export const postMarca = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const response = await insertMarca(req.body);
     res.status(200).json({
@@ -35,36 +52,40 @@ export const postMarca = async(req: Request, res: Response) => {
       data: { marca: response },
     });
   } catch (error) {
-    console.log(error);
-    
+    next(error);
   }
 };
 
-export const putMarca = async(req: Request, res: Response) => {
+export const putMarca = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
-    console.log(req.params.id);
-    
-    const id = parseInt(req.params.id)
-    const response = await updateMarca(req.body,id);
+    const id = parseInt(req.params.id);
+    const response = await updateMarca(req.body, id);
     res.status(200).json({
       status: "OK",
       data: { marca: response },
     });
   } catch (error) {
-    console.log(error);
-    
+    next(error);
   }
 };
 
-export const deleteMarca = async(req: Request, res: Response) => {
+export const deleteMarca = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
-    const id = parseInt(req.params.id)
+    const id = parseInt(req.params.id);
     const response = await removeMarca(id);
     res.status(200).json({
       status: "OK",
       data: { marca: response },
     });
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 };
