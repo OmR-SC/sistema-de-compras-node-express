@@ -8,12 +8,12 @@ datasource db {
 }
 
 model articulos {
-  id                BigInt              @id @default(autoincrement())
+  id                Int                 @id @default(autoincrement())
   descripcion       String              @db.VarChar(255)
-  estado            Int                 @db.TinyInt
+  estado            Boolean
   existencia        Int
-  marca_id          BigInt?
-  unidad_medida_id  BigInt?
+  marca_id          Int?
+  unidad_medida_id  Int?
   marcas            marcas?             @relation(fields: [marca_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FKm5ssxecfd41a4n8rovaftbkyp")
   unidades_medida   unidades_medida?    @relation(fields: [unidad_medida_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FKqmb5uljdjgmulje83cvbm7id0")
   ordenes_articulos ordenes_articulos[]
@@ -23,26 +23,26 @@ model articulos {
 }
 
 model departamentos {
-  id             BigInt           @id @default(autoincrement())
-  estado         Int              @db.TinyInt
+  id             Int              @id @default(autoincrement())
+  estado         Boolean
   nombre         String           @db.VarChar(255)
   ordenes_compra ordenes_compra[]
 }
 
 model marcas {
-  id        BigInt      @id @default(autoincrement())
-  estado    Int         @db.TinyInt
+  id        Int         @id @default(autoincrement())
+  estado    Boolean
   nombre    String      @db.VarChar(255)
   articulos articulos[]
 }
 
 model ordenes_articulos {
-  id               BigInt           @id @default(autoincrement())
+  id               Int              @id @default(autoincrement())
   cantidad         Int
   costo_unitario   Decimal          @db.Decimal(38, 2)
-  articulo_id      BigInt?
-  orden_compra_id  BigInt?
-  unidad_medida_id BigInt?
+  articulo_id      Int?
+  orden_compra_id  Int?
+  unidad_medida_id Int?
   ordenes_compra   ordenes_compra?  @relation(fields: [orden_compra_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK1f6q0pnelwyn5fou1f6jsf5dc")
   unidades_medida  unidades_medida? @relation(fields: [unidad_medida_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK747dmjusxk39rkqo6y9ilbbd1")
   articulos        articulos?       @relation(fields: [articulo_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FKdpda6v0kaukwkpxbx3d9g26w9")
@@ -53,15 +53,15 @@ model ordenes_articulos {
 }
 
 model ordenes_compra {
-  id                BigInt              @id @default(autoincrement())
+  id                Int                 @id @default(autoincrement())
   descripcion       String              @db.VarChar(255)
-  estado            Int                 @db.TinyInt
+  estado            Boolean
   fecha             DateTime?           @db.DateTime(6)
-  id_asiento        BigInt?
+  id_asiento        Int?
   monto             Decimal?            @db.Decimal(38, 2)
   numero            String              @db.VarChar(255)
-  departamento_id   BigInt?
-  proveedor_id      BigInt?
+  departamento_id   Int?
+  proveedor_id      Int?
   ordenes_articulos ordenes_articulos[]
   proveedores       proveedores?        @relation(fields: [proveedor_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK7ximp03n72hmygxmikaapavac")
   departamentos     departamentos?      @relation(fields: [departamento_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FKq072ldn8ggwvyisuytruok3ny")
@@ -71,17 +71,17 @@ model ordenes_compra {
 }
 
 model proveedores {
-  id               BigInt           @id @default(autoincrement())
-  cedula_rnc       BigInt           @map("cedula/rnc")
-  estado           Int              @db.TinyInt
+  id               Int              @id @default(autoincrement())
+  cedula_rnc       Int              @map("cedula/rnc")
+  estado           Boolean
   nombre_comercial String           @db.VarChar(255)
   ordenes_compra   ordenes_compra[]
 }
 
 model unidades_medida {
-  id                BigInt              @id @default(autoincrement())
+  id                Int                 @id @default(autoincrement())
   descripcion       String              @db.VarChar(255)
-  estado            Int                 @db.TinyInt
+  estado            Boolean
   articulos         articulos[]
   ordenes_articulos ordenes_articulos[]
 }
