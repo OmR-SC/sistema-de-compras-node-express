@@ -1,3 +1,4 @@
+import { errorHandler } from "./utils/error.handler";
 import { route as marcas } from "./v1/routes/marcas.route";
 
 const express = require("express");
@@ -12,3 +13,6 @@ app.use(cors());
 
 //Routes
 app.use("/api/v1", marcas);
+
+//Middlewares
+app.use(errorHandler);
