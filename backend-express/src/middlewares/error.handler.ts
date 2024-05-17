@@ -25,7 +25,7 @@ const errorHandler = (
   }
   res.status(statusCode).json({
     status: "FAILED",
-    data: { error },
+    data: { error: error?.message || error },
   });
 };
 

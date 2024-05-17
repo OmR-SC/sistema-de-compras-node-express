@@ -1,4 +1,4 @@
-import { errorHandler } from "./utils/error.handler";
+import { errorHandler } from "./middlewares/error.handler";
 import { route as marcas } from "./v1/routes/marcas.route";
 
 const express = require("express");
