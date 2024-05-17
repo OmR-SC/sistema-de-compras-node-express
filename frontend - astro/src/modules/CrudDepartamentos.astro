@@ -1,0 +1,12 @@
+---
+/** @jsxImportSource astro */
+import Departamentos from "../components/crud/departamentos/Departamentos";
+import FormAdd from "../components/crud/departamentos/FormAdd";
+import Header from "../components/crud/Header.astro";
+---
+
+<entities-crud>
+	<Header title="Departamentos" />
+	<Departamentos client:load />
+	<FormAdd client:load />
+</entities-crud>
