@@ -1,0 +1,87 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model articulos {
+  id                BigInt              @id @default(autoincrement())
+  descripcion       String              @db.VarChar(255)
+  estado            Int                 @db.TinyInt
+  existencia        Int
+  marca_id          BigInt?
+  unidad_medida_id  BigInt?
+  marcas            marcas?             @relation(fields: [marca_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FKm5ssxecfd41a4n8rovaftbkyp")
+  unidades_medida   unidades_medida?    @relation(fields: [unidad_medida_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FKqmb5uljdjgmulje83cvbm7id0")
+  ordenes_articulos ordenes_articulos[]
+
+  @@index([marca_id], map: "FKm5ssxecfd41a4n8rovaftbkyp")
+  @@index([unidad_medida_id], map: "FKqmb5uljdjgmulje83cvbm7id0")
+}
+
+model departamentos {
+  id             BigInt           @id @default(autoincrement())
+  estado         Int              @db.TinyInt
+  nombre         String           @db.VarChar(255)
+  ordenes_compra ordenes_compra[]
+}
+
+model marcas {
+  id        BigInt      @id @default(autoincrement())
+  estado    Int         @db.TinyInt
+  nombre    String      @db.VarChar(255)
+  articulos articulos[]
+}
+
+model ordenes_articulos {
+  id               BigInt           @id @default(autoincrement())
+  cantidad         Int
+  costo_unitario   Decimal          @db.Decimal(38, 2)
+  articulo_id      BigInt?
+  orden_compra_id  BigInt?
+  unidad_medida_id BigInt?
+  ordenes_compra   ordenes_compra?  @relation(fields: [orden_compra_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK1f6q0pnelwyn5fou1f6jsf5dc")
+  unidades_medida  unidades_medida? @relation(fields: [unidad_medida_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK747dmjusxk39rkqo6y9ilbbd1")
+  articulos        articulos?       @relation(fields: [articulo_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FKdpda6v0kaukwkpxbx3d9g26w9")
+
+  @@index([orden_compra_id], map: "FK1f6q0pnelwyn5fou1f6jsf5dc")
+  @@index([unidad_medida_id], map: "FK747dmjusxk39rkqo6y9ilbbd1")
+  @@index([articulo_id], map: "FKdpda6v0kaukwkpxbx3d9g26w9")
+}
+
+model ordenes_compra {
+  id                BigInt              @id @default(autoincrement())
+  descripcion       String              @db.VarChar(255)
+  estado            Int                 @db.TinyInt
+  fecha             DateTime?           @db.DateTime(6)
+  id_asiento        BigInt?
+  monto             Decimal?            @db.Decimal(38, 2)
+  numero            String              @db.VarChar(255)
+  departamento_id   BigInt?
+  proveedor_id      BigInt?
+  ordenes_articulos ordenes_articulos[]
+  proveedores       proveedores?        @relation(fields: [proveedor_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK7ximp03n72hmygxmikaapavac")
+  departamentos     departamentos?      @relation(fields: [departamento_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FKq072ldn8ggwvyisuytruok3ny")
+
+  @@index([proveedor_id], map: "FK7ximp03n72hmygxmikaapavac")
+  @@index([departamento_id], map: "FKq072ldn8ggwvyisuytruok3ny")
+}
+
+model proveedores {
+  id               BigInt           @id @default(autoincrement())
+  cedula_rnc       BigInt           @map("cedula/rnc")
+  estado           Int              @db.TinyInt
+  nombre_comercial String           @db.VarChar(255)
+  ordenes_compra   ordenes_compra[]
+}
+
+model unidades_medida {
+  id                BigInt              @id @default(autoincrement())
+  descripcion       String              @db.VarChar(255)
+  estado            Int                 @db.TinyInt
+  articulos         articulos[]
+  ordenes_articulos ordenes_articulos[]
+}
