@@ -12,10 +12,10 @@ export const route = Router();
 
 route.get("/marcas", getMarcas);
 
-route.get("/marcas:id", getMarca);
+route.get("/marcas/:id", getMarca);
 
 route.post("/marcas", postMarca);
 
-route.put("/marcas:id", putMarca);
+route.put("/marcas/:id", putMarca);
 
-route.delete("/marcas:id", deleteMarca);
+route.delete("/marcas/:id", deleteMarca);
