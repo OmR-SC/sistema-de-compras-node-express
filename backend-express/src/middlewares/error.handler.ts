@@ -1,15 +1,18 @@
 import { NextFunction, Request, Response } from "express";
 import { Prisma } from "../config/prisma";
+import { ZodError } from "zod";
 
 const errorHandler = (
-  error: Error,
+  error: any,
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   let statusCode = 500;
+  let response;
 
   if (error instanceof Prisma.PrismaClientKnownRequestError) {
+    response = error?.message || error;
     const prismaErrors: { [key: string]: number } = {
       P2025: 404,
       P1001: 503,
@@ -22,10 +25,16 @@ const errorHandler = (
         break;
       }
     }
+  } else if (error instanceof ZodError) {
+    statusCode = 400;
+    response = error.issues;
+  } else {
+    statusCode = error?.statusCode || 500;
+    response = error?.message || error;
   }
   res.status(statusCode).json({
     status: "FAILED",
-    data: { error: error?.message || error },
+    data: { error: response },
   });
 };
 
