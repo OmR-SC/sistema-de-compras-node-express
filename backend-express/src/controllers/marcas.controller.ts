@@ -6,6 +6,11 @@ import {
   removeMarca,
   updateMarca,
 } from "../services/marcasService";
+import {
+  CreateMarcasInput,
+  RemoveMarcasInput,
+  UpdateMarcasInput,
+} from "../schemas/marca.schema";
 
 export const getMarcas = async (
   _req: Request,
@@ -41,7 +46,7 @@ export const getMarca = async (
 };
 
 export const postMarca = async (
-  req: Request,
+  req: Request<{}, {}, CreateMarcasInput["body"]>,
   res: Response,
   next: NextFunction
 ) => {
@@ -57,7 +62,7 @@ export const postMarca = async (
 };
 
 export const putMarca = async (
-  req: Request,
+  req: Request<UpdateMarcasInput["params"]>,
   res: Response,
   next: NextFunction
 ) => {
@@ -74,7 +79,7 @@ export const putMarca = async (
 };
 
 export const deleteMarca = async (
-  req: Request,
+  req: Request<RemoveMarcasInput["params"]>,
   res: Response,
   next: NextFunction
 ) => {

@@ -5,6 +5,13 @@ import {
   postMarca,
   putMarca,
 } from "../../controllers/marcas.controller";
+import validateResource from "../../middlewares/validateResource";
+import {
+  createMarcaSchema,
+  getMarcaSchema,
+  removeMarcaSchema,
+  updateMarcaSchema,
+} from "../../schemas/marca.schema";
 
 const { Router } = require("express");
 
@@ -96,7 +103,7 @@ route.get("/marcas", getMarcas);
  *
  */
 
-route.get("/marcas/:id", getMarca);
+route.get("/marcas/:id", validateResource(getMarcaSchema), getMarca);
 
 /**
  * @openapi
@@ -150,7 +157,7 @@ route.get("/marcas/:id", getMarca);
  *               $ref: "#/components/schemas/Error"
  */
 
-route.post("/marcas", postMarca);
+route.post("/marcas", validateResource(createMarcaSchema), postMarca);
 
 /**
  * @openapi
@@ -206,7 +213,7 @@ route.post("/marcas", postMarca);
  *
  */
 
-route.put("/marcas/:id", putMarca);
+route.put("/marcas/:id", validateResource(updateMarcaSchema), putMarca);
 
 /**
  * @openapi
@@ -256,4 +263,4 @@ route.put("/marcas/:id", putMarca);
  *
  */
 
-route.delete("/marcas/:id", deleteMarca);
+route.delete("/marcas/:id", validateResource(removeMarcaSchema), deleteMarca);
