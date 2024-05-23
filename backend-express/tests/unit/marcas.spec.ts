@@ -161,7 +161,7 @@ describe("marcas", () => {
           });
         });
       });
-      describe("given representante has been rejected by the service", () => {
+      describe("given marca has been rejected by the service", () => {
         it("should call the mockNext function with the error as an argument", async () => {
           mockMarcasService.insertMarca.mockRejectedValueOnce(
             new Error("Service Error")
@@ -177,9 +177,9 @@ describe("marcas", () => {
         });
       });
     });
-    describe("putRepresentante", () => {
-      describe("given representantes has been accepted by the server", () => {
-        it("should update the representante", async () => {
+    describe("putMarca", () => {
+      describe("given marca has been accepted by the server", () => {
+        it("should update the marca", async () => {
           mockMarcasService.updateMarca.mockResolvedValueOnce(marcasPayload);
           //@ts-ignore
           await putMarca(mockRequest, mockResponse, mockNext);
@@ -195,7 +195,7 @@ describe("marcas", () => {
           });
         });
       });
-      describe("given representante has been rejected by the service", () => {
+      describe("given marca has been rejected by the service", () => {
         it("should call the mockNext function with the error as an argument", async () => {
           mockMarcasService.updateMarca.mockRejectedValueOnce(
             new Error("Service Error")
@@ -211,9 +211,9 @@ describe("marcas", () => {
         });
       });
     });
-    describe("deleteRepresentante", () => {
+    describe("deleteMarca", () => {
       describe("the service has accepted the request", () => {
-        it("should return the deleted representante", async () => {
+        it("should return the deleted marca", async () => {
           mockMarcasService.removeMarca.mockResolvedValueOnce(marcasPayload);
           //@ts-ignore
           await deleteMarca(mockRequest, mockResponse, mockNext);
@@ -311,7 +311,7 @@ describe("marcas", () => {
         });
       });
     });
-    describe("insertRepresentante", () => {
+    describe("insertMarca", () => {
       describe("given marca has been accepted by the ORM", () => {
         it("should create the marca", async () => {
           mockPrisma.marcas.create.mockResolvedValueOnce(marcasPayload);
