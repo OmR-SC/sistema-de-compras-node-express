@@ -30,6 +30,9 @@ dist-ssr
 .env.test.local
 .env.production.local
 .dev*
+.env.production
+.env.development
+.env.testing
 
 # production
 build

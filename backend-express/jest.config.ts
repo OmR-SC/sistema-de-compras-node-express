@@ -3,6 +3,12 @@
  * https://jestjs.io/docs/configuration
  */
 
+import path from "path";
+
+let envFile = ".env.test";
+import dotenv from "dotenv";
+dotenv.config({ path: path.resolve(__dirname, envFile) });
+
 /** @type {import('jest').Config} */
 const config = {
   // All imported modules in your tests should be mocked automatically

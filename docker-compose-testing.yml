@@ -1,0 +1,37 @@
+#version: '3.9'
+
+services:
+  mysql_kg_test_db:
+    image: mysql:8
+    container_name: mysql-kindergarten-ts-test_c
+    restart: always
+    env_file:
+      - ./.env.testing
+    ports:
+      - "${MYSQLDB_LOCAL_PORT}:${MYSQLDB_DOCKER_PORT}"
+    networks:
+      - backend-kgts-network
+
+  server:
+    container_name: backend-kindergarten-ts-test_c
+    build: 
+      context: ./backend-express
+      dockerfile: Dockerfile.testing
+    env_file:
+      - ./.env.testing
+    environment:
+      - NODE_ENV=test
+    depends_on:
+      - mysql_kg_test_db
+    ports:
+      - "${NODE_LOCAL_PORT}:${NODE_DOCKER_PORT}"
+    networks:
+      - backend-kgts-network
+      - frontend-kgts-network
+
+networks:
+  backend-kgts-network:
+    driver: bridge
+  frontend-kgts-network:
+    driver: bridge
+
