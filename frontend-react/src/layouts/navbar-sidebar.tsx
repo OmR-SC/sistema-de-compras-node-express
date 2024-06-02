@@ -45,18 +45,18 @@ const MainContentFooter: FC = function () {
         <div className="flex w-full flex-col gap-y-6 lg:flex-row lg:justify-between lg:gap-y-0">
           <Footer.LinkGroup>
             <Footer.Link href="#" className="mr-3 mb-3 lg:mb-0">
-              Terms and conditions
+              Terminos y condiciones
             </Footer.Link>
             <Footer.Link href="#" className="mr-3 mb-3 lg:mb-0">
-              Privacy Policy
+              Politica de privacidad
             </Footer.Link>
             <Footer.Link href="#" className="mr-3">
-              Licensing
+              Licencia
             </Footer.Link>
             <Footer.Link href="#" className="mr-3">
-              Cookie Policy
+              Política de cookies
             </Footer.Link>
-            <Footer.Link href="#">Contact</Footer.Link>
+            <Footer.Link href="#">Contacto</Footer.Link>
           </Footer.LinkGroup>
           <Footer.LinkGroup>
             <div className="flex gap-x-1">

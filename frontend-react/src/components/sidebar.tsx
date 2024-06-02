@@ -38,41 +38,15 @@ const ExampleSidebar: FC = function () {
           <Sidebar.Items>
             <Sidebar.ItemGroup>
               <Sidebar.Item
-                href="/"
-                icon={HiChartPie}
-                className={
-                  "/" === currentPage ? "bg-gray-100 dark:bg-gray-700" : ""
-                }
-              >
-                Dashboard
-              </Sidebar.Item>
-              <Sidebar.Item
-                href="/e-commerce/products"
+                href="/crud/marcas"
                 icon={HiShoppingBag}
                 className={
-                  "/e-commerce/products" === currentPage
+                  "/crud/marcas" === currentPage
                     ? "bg-gray-100 dark:bg-gray-700"
                     : ""
                 }
               >
-                Products
-              </Sidebar.Item>
-              <Sidebar.Item
-                href="/users/list"
-                icon={HiUsers}
-                className={
-                  "/users/list" === currentPage
-                    ? "bg-gray-100 dark:bg-gray-700"
-                    : ""
-                }
-              >
-                Users list
-              </Sidebar.Item>
-              <Sidebar.Item href="/authentication/sign-in" icon={HiLogin}>
-                Sign in
-              </Sidebar.Item>
-              <Sidebar.Item href="/authentication/sign-up" icon={HiPencil}>
-                Sign up
+                Marcas
               </Sidebar.Item>
             </Sidebar.ItemGroup>
             <Sidebar.ItemGroup>
@@ -80,19 +54,19 @@ const ExampleSidebar: FC = function () {
                 href="https://github.com/themesberg/flowbite-react/"
                 icon={HiClipboard}
               >
-                Docs
+                Documentación
               </Sidebar.Item>
               <Sidebar.Item
                 href="https://flowbite-react.com/"
                 icon={HiCollection}
               >
-                Components
+                Componentes
               </Sidebar.Item>
               <Sidebar.Item
                 href="https://github.com/themesberg/flowbite-react/issues"
                 icon={HiInformationCircle}
               >
-                Help
+                Ayuda
               </Sidebar.Item>
             </Sidebar.ItemGroup>
           </Sidebar.Items>

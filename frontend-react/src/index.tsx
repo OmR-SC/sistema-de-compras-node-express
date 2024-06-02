@@ -11,6 +11,7 @@ import SignInPage from "./pages/authentication/sign-in";
 import SignUpPage from "./pages/authentication/sign-up";
 import EcommerceProductsPage from "./pages/e-commerce/products";
 import UserListPage from "./pages/users/list";
+import MarcasPage from "./pages/crud/marcas";
 
 const container = document.getElementById("root");
 
@@ -25,12 +26,16 @@ root.render(
     <Flowbite theme={{ theme }}>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<DashboardPage />} index />
+          <Route path="/" element={<MarcasPage />} index />
           <Route path="/authentication/sign-in" element={<SignInPage />} />
           <Route path="/authentication/sign-up" element={<SignUpPage />} />
           <Route
             path="/e-commerce/products"
             element={<EcommerceProductsPage />}
+          />
+          <Route
+            path="/crud/marcas"
+            element={<MarcasPage />}
           />
           <Route path="/users/list" element={<UserListPage />} />
         </Routes>

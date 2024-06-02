@@ -1346,11 +1346,11 @@ export const Pagination: FC = function () {
           <HiChevronRight className="text-2xl" />
         </a>
         <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
-          Showing&nbsp;
+          Mostrando&nbsp;
           <span className="font-semibold text-gray-900 dark:text-white">
             1-20
           </span>
-          &nbsp;of&nbsp;
+          &nbsp;de&nbsp;
           <span className="font-semibold text-gray-900 dark:text-white">
             2290
           </span>
@@ -1362,13 +1362,13 @@ export const Pagination: FC = function () {
           className="inline-flex flex-1 items-center justify-center rounded-lg bg-primary-700 py-2 px-3 text-center text-sm font-medium text-white hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
         >
           <HiChevronLeft className="mr-1 text-base" />
-          Previous
+          Anterior
         </a>
         <a
           href="#"
           className="inline-flex flex-1 items-center justify-center rounded-lg bg-primary-700 py-2 px-3 text-center text-sm font-medium text-white hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
         >
-          Next
+          Siguiente
           <HiChevronRight className="ml-1 text-base" />
         </a>
       </div>
