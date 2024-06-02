@@ -1,4 +1,9 @@
 import { expect } from "@jest/globals";
+import { Marca } from "../../src/types/api";
+
+// Unit testing payloads
+
+//Marcas
 
 const marcaId = 2;
 
@@ -26,10 +31,21 @@ const expectedMarcas = expect.arrayContaining([
   }),
 ]);
 
+//Integration testing payloads
+
+//Marcas
+
+const primeraMarca: Omit<Marca, "id"> = { estado: false, nombre: "marcaTest1" };
+const segundaMarca: Omit<Marca, "id"> = { estado: false, nombre: "marcaTest2" };
+const terceraMarca: Omit<Marca, "id"> = { estado: false, nombre: "marcaTest3" };
+
 export {
   marcaId,
   marcasPayload,
   initialMarcasPayload,
   expectedMarca,
   expectedMarcas,
+  primeraMarca,
+  segundaMarca,
+  terceraMarca,
 };
