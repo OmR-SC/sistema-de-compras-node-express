@@ -2,7 +2,6 @@
 import {
   Breadcrumb,
   Button,
-  Checkbox,
   Label,
   Modal,
   Table,
@@ -24,8 +23,9 @@ import {
 } from "react-icons/hi";
 import NavbarSidebarLayout from "../../layouts/navbar-sidebar";
 import { Pagination } from "../users/list";
-import { getMarcas } from "../services/marcas";
+import { getMarcas, postMarca } from "../services/marcas";
 import { Marca } from "../../types/api";
+import { Field, Form, Formik, FormikProps } from "formik";
 
 const MarcasPage: FC = function () {
   return (
@@ -120,7 +120,6 @@ const SearchForProducts: FC = function () {
 
 const AddProductModal: FC = function () {
   const [isOpen, setOpen] = useState(false);
-
   return (
     <>
       <Button color="primary" onClick={() => setOpen(!isOpen)}>
@@ -128,83 +127,66 @@ const AddProductModal: FC = function () {
         Agregar una marca
       </Button>
       <Modal onClose={() => setOpen(false)} show={isOpen}>
-        <Modal.Header className="border-b border-gray-200 !p-6 dark:border-gray-700">
-          <strong>Add product</strong>
-        </Modal.Header>
-        <Modal.Body>
-          <form>
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-              <div>
-                <Label htmlFor="productName">Product name</Label>
-                <TextInput
-                  id="productName"
-                  name="productName"
-                  placeholder='Apple iMac 27"'
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <Label htmlFor="category">Category</Label>
-                <TextInput
-                  id="category"
-                  name="category"
-                  placeholder="Electronics"
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <Label htmlFor="brand">Brand</Label>
-                <TextInput
-                  id="brand"
-                  name="brand"
-                  placeholder="Apple"
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <Label htmlFor="price">Price</Label>
-                <TextInput
-                  id="price"
-                  name="price"
-                  type="number"
-                  placeholder="$2300"
-                  className="mt-1"
-                />
-              </div>
-              <div className="lg:col-span-2">
-                <Label htmlFor="producTable.Celletails">Product details</Label>
-                <Textarea
-                  id="producTable.Celletails"
-                  name="producTable.Celletails"
-                  placeholder="e.g. 3.8GHz 8-core 10th-generation Intel Core i7 processor, Turbo Boost up to 5.0GHz, Ram 16 GB DDR4 2300Mhz"
-                  rows={6}
-                  className="mt-1"
-                />
-              </div>
-              <div className="lg:col-span-2">
-                <div className="flex w-full items-center justify-center">
-                  <label className="flex h-32 w-full cursor-pointer flex-col rounded border-2 border-dashed border-gray-300 hover:bg-gray-50 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-700">
-                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                      <HiUpload className="text-4xl text-gray-300" />
-                      <p className="py-1 text-sm text-gray-600 dark:text-gray-500">
-                        Upload a file or drag and drop
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        PNG, JPG, GIF up to 10MB
-                      </p>
-                    </div>
-                    <input type="file" className="hidden" />
-                  </label>
+        <Formik
+          initialValues={{ estado: "", nombre: "" }}
+          onSubmit={async (values, { resetForm }) => {
+            const marca = {
+              ...values,
+              estado: values.estado == "true",
+            } as Omit<Marca, "id">;
+            const res = await postMarca(marca);
+
+            if (res.data.marca) {
+              resetForm();
+              alert("Marca registrada satisfactoriamente");
+
+              setOpen(false);
+            } else {
+              alert(res);
+            }
+          }}
+        >
+          {({ submitForm }: FormikProps<any>) => (
+            <Form>
+              <Modal.Header className="border-b border-gray-200 !p-6 dark:border-gray-700">
+                <strong>Agregar una marca</strong>
+              </Modal.Header>
+              <Modal.Body>
+                <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                  <div>
+                    <Label htmlFor="marcaName">Nombre</Label>
+                    <Field
+                      id="marcaName"
+                      name="nombre"
+                      placeholder="Pepsi"
+                      className="mt-1 block w-full border disabled:cursor-not-allowed disabled:opacity-50 bg-gray-50 border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 rounded-lg p-2.5 text-sm"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="estadoMarca_add">Estado</Label>
+
+                    <Field
+                      as="select"
+                      name="estado"
+                      id="estadoMarca_add"
+                      className="block w-full border disabled:cursor-not-allowed disabled:opacity-50 bg-gray-50 border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 rounded-lg p-2.5 text-sm"
+                    >
+                      <option value="">-- Seleccione uno --</option>
+                      <option value="false">Inactivo</option>
+                      <option value="true">Activo</option>
+                    </Field>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button color="primary" onClick={() => setOpen(false)}>
-            Add product
-          </Button>
-        </Modal.Footer>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button color="primary" onClick={() => submitForm()}>
+                  Agregar
+                </Button>
+                <Button onClick={() => setOpen(false)}>Cancelar</Button>
+              </Modal.Footer>
+            </Form>
+          )}
+        </Formik>
       </Modal>
     </>
   );
@@ -389,11 +371,13 @@ const ProductsTable: FC = function () {
         <Table.HeadCell className="w-1/4">Nombre</Table.HeadCell>
         <Table.HeadCell className="w-1/4">Estado</Table.HeadCell>
         <Table.HeadCell className="w-1/4"></Table.HeadCell>
-
       </Table.Head>
       <Table.Body className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-800">
         {marcas.map((marca, i) => (
-          <Table.Row className="hover:bg-gray-100 dark:hover:bg-gray-700">
+          <Table.Row
+            key={i}
+            className="hover:bg-gray-100 dark:hover:bg-gray-700"
+          >
             <Table.Cell className="whitespace-nowrap p-4 text-sm font-normal text-gray-500 dark:text-gray-400 w-1/4">
               <div className="text-base font-semibold text-gray-900 dark:text-white">
                 {marca.id}
@@ -402,7 +386,7 @@ const ProductsTable: FC = function () {
             <Table.Cell className="whitespace-nowrap p-4 text-base font-medium text-gray-900 dark:text-white w-1/4">
               {marca.nombre}
             </Table.Cell>
-            <Table.Cell className="whitespace-nowrap p-4 text-base font-medium text-gray-900 dark:text-white flex items-center ">
+            <Table.Cell className="whitespace-nowrap p-4 text-base font-medium text-gray-900 dark:text-white flex items-center">
               {marca.estado ? (
                 <>
                   <div className="h-2.5 w-2.5 rounded-full bg-green-400 mr-2" />
