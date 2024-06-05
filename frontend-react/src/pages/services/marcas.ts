@@ -16,5 +16,5 @@ export const getMarcas = async () => {
       body: JSON.stringify(marca),
       headers: { 'Content-Type': 'application/json' }
     });
-    return (await res.json());
+    return res;
   }

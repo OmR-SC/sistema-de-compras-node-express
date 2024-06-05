@@ -25,7 +25,8 @@ import NavbarSidebarLayout from "../../layouts/navbar-sidebar";
 import { Pagination } from "../users/list";
 import { getMarcas, postMarca } from "../services/marcas";
 import { Marca } from "../../types/api";
-import { Field, Form, Formik, FormikProps } from "formik";
+import { ErrorMessage, Field, Form, Formik, FormikProps } from "formik";
+import { newMarcaSchema } from "../../schemas/marcas";
 
 const MarcasPage: FC = function () {
   return (
@@ -129,24 +130,47 @@ const AddProductModal: FC = function () {
       <Modal onClose={() => setOpen(false)} show={isOpen}>
         <Formik
           initialValues={{ estado: "", nombre: "" }}
-          onSubmit={async (values, { resetForm }) => {
+          onSubmit={async (
+            values,
+            { resetForm, setFieldError, setSubmitting }
+          ) => {
             const marca = {
               ...values,
               estado: values.estado == "true",
             } as Omit<Marca, "id">;
             const res = await postMarca(marca);
-
-            if (res.data.marca) {
+            if (res.status == 200) {
               resetForm();
               alert("Marca registrada satisfactoriamente");
-
               setOpen(false);
-            } else {
-              alert(res);
+            } else if (res.status == 400) {
+              const errorArray: any = (await res.json()).data.error;
+              alert("Se han encontrado errores de validación del servidor");
+
+              for (let i = errorArray.length - 1; i >= 0; i--) {
+                if (
+                  errorArray[i].path &&
+                  errorArray[i].path.includes("nombre")
+                ) {
+                  setFieldError("nombre", errorArray[i].message);
+                }
+                if (
+                  errorArray[i].path &&
+                  errorArray[i].path.includes("estado")
+                ) {
+                  setFieldError("estado", errorArray[i].message);
+                }
+              }
             }
+
+            setSubmitting(false);
           }}
+          validationSchema={newMarcaSchema}
         >
-          {({ submitForm }: FormikProps<any>) => (
+          {({
+            submitForm,
+            isSubmitting,
+          }: FormikProps<any>) => (
             <Form>
               <Modal.Header className="border-b border-gray-200 !p-6 dark:border-gray-700">
                 <strong>Agregar una marca</strong>
@@ -161,6 +185,8 @@ const AddProductModal: FC = function () {
                       placeholder="Pepsi"
                       className="mt-1 block w-full border disabled:cursor-not-allowed disabled:opacity-50 bg-gray-50 border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 rounded-lg p-2.5 text-sm"
                     />
+
+                    <ErrorMessage component="div" name="nombre" />
                   </div>
                   <div>
                     <Label htmlFor="estadoMarca_add">Estado</Label>
@@ -175,14 +201,21 @@ const AddProductModal: FC = function () {
                       <option value="false">Inactivo</option>
                       <option value="true">Activo</option>
                     </Field>
+                    <ErrorMessage component="div" name="estado" />
                   </div>
                 </div>
               </Modal.Body>
               <Modal.Footer>
-                <Button color="primary" onClick={() => submitForm()}>
+                <Button
+                  color="dark"
+                  disabled={isSubmitting}
+                  onClick={() => submitForm()}
+                >
                   Agregar
                 </Button>
-                <Button onClick={() => setOpen(false)}>Cancelar</Button>
+                <Button color="gray" onClick={() => setOpen(false)}>
+                  Cancelar
+                </Button>
               </Modal.Footer>
             </Form>
           )}
