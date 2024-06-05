@@ -9,7 +9,7 @@ import {
   TextInput,
 } from "flowbite-react";
 import type { FC } from "react";
-import { useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { FaPlus } from "react-icons/fa";
 import {
   HiCog,
@@ -27,6 +27,7 @@ import { getMarcas, postMarca } from "../services/marcas";
 import { Marca } from "../../types/api";
 import { ErrorMessage, Field, Form, Formik, FormikProps } from "formik";
 import { newMarcaSchema } from "../../schemas/marcas";
+import { MarcasContext } from "../../context/marcas/MarcasContext";
 
 const MarcasPage: FC = function () {
   return (
@@ -121,6 +122,7 @@ const SearchForProducts: FC = function () {
 
 const AddProductModal: FC = function () {
   const [isOpen, setOpen] = useState(false);
+  const {setMarcas} = useContext(MarcasContext);
   return (
     <>
       <Button color="primary" onClick={() => setOpen(!isOpen)}>
@@ -142,6 +144,7 @@ const AddProductModal: FC = function () {
             if (res.status == 200) {
               resetForm();
               alert("Marca registrada satisfactoriamente");
+              setMarcas((marcas : Marca[])=>[...marcas,marca]);
               setOpen(false);
             } else if (res.status == 400) {
               const errorArray: any = (await res.json()).data.error;
@@ -167,10 +170,7 @@ const AddProductModal: FC = function () {
           }}
           validationSchema={newMarcaSchema}
         >
-          {({
-            submitForm,
-            isSubmitting,
-          }: FormikProps<any>) => (
+          {({ submitForm, isSubmitting }: FormikProps<any>) => (
             <Form>
               <Modal.Header className="border-b border-gray-200 !p-6 dark:border-gray-700">
                 <strong>Agregar una marca</strong>
@@ -387,15 +387,7 @@ const DeleteProductModal: FC = function () {
 };
 
 const ProductsTable: FC = function () {
-  const [marca, setMarca] = useState<Marca>({} as Marca);
-  const [marcas, setMarcas] = useState<Marca[]>([]);
-
-  useEffect(() => {
-    (async () => {
-      const response = await getMarcas();
-      setMarcas(response as Marca[]);
-    })();
-  }, []);
+  const { marcas, setMarcas } = useContext(MarcasContext);
 
   return (
     <Table className="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
