@@ -9,3 +9,12 @@ export const getMarcas = async () => {
     });
     return (await res.json()).data.marcas as Marca[];
   }
+
+  export const postMarca = async (marca: Omit<Marca,"id">) => {
+    const res = await fetch(API + "/marcas/", {
+      method: "POST",
+      body: JSON.stringify(marca),
+      headers: { 'Content-Type': 'application/json' }
+    });
+    return res;
+  }

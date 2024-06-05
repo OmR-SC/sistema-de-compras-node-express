@@ -29,10 +29,13 @@
     "classnames": "^2.3.2",
     "flowbite": "^1.5.5",
     "flowbite-react": "^0.3.7",
+    "formik": "^2.4.6",
     "react-apexcharts": "^1.4.0",
-    "react-icons": "^4.7.1"
+    "react-icons": "^4.7.1",
+    "yup": "^1.4.0"
   },
   "devDependencies": {
+    "@types/node": "^20.14.0",
     "@types/react": "^18.0.26",
     "@types/react-dom": "^18.0.9",
     "@types/sortablejs": "^1.15.0",
