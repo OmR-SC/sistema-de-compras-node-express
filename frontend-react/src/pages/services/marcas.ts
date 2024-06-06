@@ -18,3 +18,12 @@ export const postMarca = async (marca: Omit<Marca, "id">) => {
   });
   return res;
 };
+
+export const putMarca = async (marca: Marca) => {
+  const res = await fetch(API + "/marcas/" + marca.id, {
+    method: "PUT",
+    body: JSON.stringify(marca),
+    headers: { "Content-Type": "application/json" },
+  });
+  return res;
+};

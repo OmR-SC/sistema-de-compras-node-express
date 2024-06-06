@@ -5,11 +5,10 @@ import {
   Label,
   Modal,
   Table,
-  Textarea,
   TextInput,
 } from "flowbite-react";
-import type { FC } from "react";
-import { useContext, useState } from "react";
+import type { ChangeEvent, FC } from "react";
+import { useContext, useEffect, useState } from "react";
 import { FaPlus } from "react-icons/fa";
 import {
   HiCog,
@@ -19,14 +18,13 @@ import {
   HiOutlineExclamationCircle,
   HiPencilAlt,
   HiTrash,
-  HiUpload,
 } from "react-icons/hi";
 import NavbarSidebarLayout from "../../layouts/navbar-sidebar";
 import { Pagination } from "../users/list";
-import { getMarcas, postMarca } from "../services/marcas";
+import { postMarca, putMarca } from "../services/marcas";
 import { Marca } from "../../types/api";
 import { ErrorMessage, Field, Form, Formik, FormikProps } from "formik";
-import { newMarcaSchema } from "../../schemas/marcas";
+import { newMarcaSchema, updateMarcaSchema } from "../../schemas/marcas";
 import { MarcasContext } from "../../context/marcas/MarcasContext";
 
 const MarcasPage: FC = function () {
@@ -122,7 +120,7 @@ const SearchForProducts: FC = function () {
 
 const AddProductModal: FC = function () {
   const [isOpen, setOpen] = useState(false);
-  const {setMarcas} = useContext(MarcasContext);
+  const { setMarcas } = useContext(MarcasContext);
   return (
     <>
       <Button color="primary" onClick={() => setOpen(!isOpen)}>
@@ -144,7 +142,7 @@ const AddProductModal: FC = function () {
             if (res.status == 200) {
               resetForm();
               alert("Marca registrada satisfactoriamente");
-              setMarcas((marcas : Marca[])=>[...marcas,marca]);
+              setMarcas((marcas: Marca[]) => [...marcas, marca]);
               setOpen(false);
             } else if (res.status == 400) {
               const errorArray: any = (await res.json()).data.error;
@@ -225,128 +223,148 @@ const AddProductModal: FC = function () {
   );
 };
 
-const EditProductModal: FC = function () {
+interface EditProductModalProps {
+  marcaEdit: Marca;
+}
+const EditProductModal: FC<EditProductModalProps> = function ({ marcaEdit }) {
   const [isOpen, setOpen] = useState(false);
+  const { marca, setMarca } = useContext(MarcasContext);
+  const { setMarcas } = useContext(MarcasContext);
 
+  const handleOpenEditMarcaModal = () => {
+    setOpen(!isOpen);
+  };
+  useEffect(() => {
+    if (isOpen) {
+      const marca = {
+        id: marcaEdit.id,
+        estado: !!marcaEdit.estado,
+        nombre: marcaEdit.nombre,
+      } as Marca;
+      setMarca(marca);
+    }
+  }, [isOpen]);
   return (
     <>
-      <Button color="primary" onClick={() => setOpen(!isOpen)}>
+      <Button color="primary" onClick={() => handleOpenEditMarcaModal()}>
         <HiPencilAlt className="mr-2 text-lg" />
         Editar marca
       </Button>
       <Modal onClose={() => setOpen(false)} show={isOpen}>
-        <Modal.Header className="border-b border-gray-200 !p-6 dark:border-gray-700">
-          <strong>Edit product</strong>
-        </Modal.Header>
-        <Modal.Body>
-          <form>
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-              <div>
-                <Label htmlFor="productName">Product name</Label>
-                <TextInput
-                  id="productName"
-                  name="productName"
-                  placeholder='Apple iMac 27"'
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <Label htmlFor="category">Category</Label>
-                <TextInput
-                  id="category"
-                  name="category"
-                  placeholder="Electronics"
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <Label htmlFor="brand">Brand</Label>
-                <TextInput
-                  id="brand"
-                  name="brand"
-                  placeholder="Apple"
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <Label htmlFor="price">Price</Label>
-                <TextInput
-                  id="price"
-                  name="price"
-                  type="number"
-                  placeholder="$2300"
-                  className="mt-1"
-                />
-              </div>
-              <div className="lg:col-span-2">
-                <Label htmlFor="productDetails">Product details</Label>
-                <Textarea
-                  id="productDetails"
-                  name="productDetails"
-                  placeholder="e.g. 3.8GHz 8-core 10th-generation Intel Core i7 processor, Turbo Boost up to 5.0GHz, Ram 16 GB DDR4 2300Mhz"
-                  rows={6}
-                  className="mt-1"
-                />
-              </div>
-              <div className="flex space-x-5">
-                <div>
-                  <img
-                    alt="Apple iMac 1"
-                    src="/images/products/apple-imac-1.png"
-                    className="h-24"
-                  />
-                  <a href="#" className="cursor-pointer">
-                    <span className="sr-only">Delete</span>
-                    <HiTrash className="-mt-5 text-2xl text-red-600" />
-                  </a>
+        <Formik
+          initialValues={marca}
+          onSubmit={async (
+            values,
+            { resetForm, setFieldError, setSubmitting }
+          ) => {
+            const res = await putMarca(marca);
+            if (res.status == 200) {
+              resetForm();
+              alert("Marca actualizada satisfactoriamente");
+
+              setMarcas((prevMarcas: Marca[]) => {
+                const marcasFiltred = prevMarcas.filter(
+                  (m: Marca) => m.id !== marca.id
+                );
+
+                return [...marcasFiltred, marca];
+              });
+              setOpen(false);
+            } else if (res.status == 400) {
+              const errorArray: any = (await res.json()).data.error;
+              alert("Se han encontrado errores de validación del servidor");
+
+              for (let i = errorArray.length - 1; i >= 0; i--) {
+                if (errorArray[i].path && errorArray[i].path.includes("id")) {
+                  setFieldError("id", errorArray[i].message);
+                }
+                if (
+                  errorArray[i].path &&
+                  errorArray[i].path.includes("nombre")
+                ) {
+                  setFieldError("nombre", errorArray[i].message);
+                }
+                if (
+                  errorArray[i].path &&
+                  errorArray[i].path.includes("estado")
+                ) {
+                  setFieldError("estado", errorArray[i].message);
+                }
+              }
+            }
+            setSubmitting(false);
+          }}
+          validationSchema={updateMarcaSchema}
+          enableReinitialize={true}
+        >
+          {({ submitForm, isSubmitting }: FormikProps<any>) => (
+            <form>
+              <Modal.Header className="border-b border-gray-200 !p-6 dark:border-gray-700">
+                <strong>Editar marca</strong>
+              </Modal.Header>
+              <Modal.Body>
+                <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                  <div>
+                    <Label htmlFor="marcaIdEdit">Id</Label>
+                    <Field
+                      id="marcaIdEdit"
+                      name="id"
+                      type="number"
+                      placeholder="0"
+                      disabled
+                      className="mt-1 block w-full border disabled:cursor-not-allowed disabled:opacity-50 bg-gray-50 border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 rounded-lg p-2.5 text-sm"
+                    />
+                    <ErrorMessage component="div" name="id" />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="marcaNameEdit">Nombre</Label>
+                    <Field
+                      id="marcaNameEdit"
+                      name="nombre"
+                      placeholder="Pepsi"
+                      onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                        setMarca({ ...marca, nombre: e.target.value });
+                      }}
+                      className="mt-1 block w-full border disabled:cursor-not-allowed disabled:opacity-50 bg-gray-50 border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 rounded-lg p-2.5 text-sm"
+                    />
+                    <ErrorMessage component="div" name="nombre" />
+                  </div>
+                  <div>
+                    <Label htmlFor="estadoMarcaEdit">Estado</Label>
+
+                    <Field
+                      as="select"
+                      name="estado"
+                      id="estadoMarcaEdit"
+                      onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                        const nuevoEstado = e.target.value === "true";
+                        setMarca({ ...marca, estado: nuevoEstado });
+                      }}
+                      className="block w-full border disabled:cursor-not-allowed disabled:opacity-50 bg-gray-50 border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 rounded-lg p-2.5 text-sm"
+                    >
+                      <option value="false">Inactivo</option>
+                      <option value="true">Activo</option>
+                    </Field>
+                    <ErrorMessage component="div" name="estado" />
+                  </div>
                 </div>
-                <div>
-                  <img
-                    alt="Apple iMac 2"
-                    src="/images/products/apple-imac-2.png"
-                    className="h-24"
-                  />
-                  <a href="#" className="cursor-pointer">
-                    <span className="sr-only">Delete</span>
-                    <HiTrash className="-mt-5 text-2xl text-red-600" />
-                  </a>
-                </div>
-                <div>
-                  <img
-                    alt="Apple iMac 3"
-                    src="/images/products/apple-imac-3.png"
-                    className="h-24"
-                  />
-                  <a href="#" className="cursor-pointer">
-                    <span className="sr-only">Delete</span>
-                    <HiTrash className="-mt-5 text-2xl text-red-600" />
-                  </a>
-                </div>
-              </div>
-              <div className="lg:col-span-2">
-                <div className="flex w-full items-center justify-center">
-                  <label className="flex h-32 w-full cursor-pointer flex-col rounded border-2 border-dashed border-gray-300 hover:bg-gray-50 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-700">
-                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                      <HiUpload className="text-4xl text-gray-300" />
-                      <p className="py-1 text-sm text-gray-600 dark:text-gray-500">
-                        Upload a file or drag and drop
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        PNG, JPG, GIF up to 10MB
-                      </p>
-                    </div>
-                    <input type="file" className="hidden" />
-                  </label>
-                </div>
-              </div>
-            </div>
-          </form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button color="primary" onClick={() => setOpen(false)}>
-            Save all
-          </Button>
-        </Modal.Footer>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button
+                  color="dark"
+                  disabled={isSubmitting}
+                  onClick={() => submitForm()}
+                >
+                  Actualizar
+                </Button>
+                <Button color="gray" onClick={() => setOpen(false)}>
+                  Cancelar
+                </Button>
+              </Modal.Footer>
+            </form>
+          )}
+        </Formik>
       </Modal>
     </>
   );
@@ -387,7 +405,7 @@ const DeleteProductModal: FC = function () {
 };
 
 const ProductsTable: FC = function () {
-  const { marcas, setMarcas } = useContext(MarcasContext);
+  const { marcas } = useContext(MarcasContext);
 
   return (
     <Table className="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
@@ -398,7 +416,7 @@ const ProductsTable: FC = function () {
         <Table.HeadCell className="w-1/4"></Table.HeadCell>
       </Table.Head>
       <Table.Body className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-800">
-        {marcas.map((marca, i) => (
+        {marcas.map((marca: Marca, i: number) => (
           <Table.Row
             key={i}
             className="hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -426,7 +444,7 @@ const ProductsTable: FC = function () {
             </Table.Cell>
             <Table.Cell className="space-x-2 whitespace-nowrap p-4">
               <div className="flex items-center gap-x-3 w-1/4">
-                <EditProductModal />
+                <EditProductModal marcaEdit={marca} />
                 <DeleteProductModal />
               </div>
             </Table.Cell>

@@ -9,6 +9,11 @@ interface Props {
 
 function MarcasProvider({ children }: Props) {
   const [marcas, setMarcas] = useState<Marca[]>([]);
+  const [marca, setMarca] = useState<Marca>({
+    id: 0,
+    estado: false,
+    nombre: "",
+  } as Marca);
 
   useEffect(() => {
     (async () => {
@@ -17,7 +22,7 @@ function MarcasProvider({ children }: Props) {
     })();
   }, []);
   return (
-    <MarcasContext.Provider value={{ marcas, setMarcas }}>
+    <MarcasContext.Provider value={{ marcas, setMarcas, marca, setMarca }}>
       {children}
     </MarcasContext.Provider>
   );
