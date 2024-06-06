@@ -21,7 +21,7 @@ import {
 } from "react-icons/hi";
 import NavbarSidebarLayout from "../../layouts/navbar-sidebar";
 import { Pagination } from "../users/list";
-import { postMarca, putMarca } from "../services/marcas";
+import { deleteMarca, postMarca, putMarca } from "../services/marcas";
 import { Marca } from "../../types/api";
 import { ErrorMessage, Field, Form, Formik, FormikProps } from "formik";
 import { newMarcaSchema, updateMarcaSchema } from "../../schemas/marcas";
@@ -370,8 +370,35 @@ const EditProductModal: FC<EditProductModalProps> = function ({ marcaEdit }) {
   );
 };
 
-const DeleteProductModal: FC = function () {
+interface DeleteMarcaModalProps {
+  marcaDelete: Marca;
+}
+const DeleteProductModal: FC<DeleteMarcaModalProps> = function ({
+  marcaDelete,
+}) {
   const [isOpen, setOpen] = useState(false);
+  const { setMarcas } = useContext(MarcasContext);
+
+  const deleteConfirmation = async () => {
+    const res = await deleteMarca(marcaDelete.id);
+
+    if (res.status == 200) {
+      alert("Marca eliminada satisfactoriamente");
+
+      setMarcas((prevMarcas: Marca[]) => {
+        const marcasFiltred = prevMarcas.filter(
+          (m: Marca) => m.id !== marcaDelete.id
+        );
+        return [...marcasFiltred];
+      });
+      setOpen(false);
+    } else if (res.status == 404) {
+      alert("No se ha encontrado la marca");
+      setOpen(false);
+    } else if (res.status == 500) {
+      alert("Ha ocurrido un error en el servidor, intente nuevamente");
+    }
+  };
 
   return (
     <>
@@ -381,20 +408,20 @@ const DeleteProductModal: FC = function () {
       </Button>
       <Modal onClose={() => setOpen(false)} show={isOpen} size="md">
         <Modal.Header className="px-3 pt-3 pb-0">
-          <span className="sr-only">Delete product</span>
+          <span className="sr-only">Eliminar marca</span>
         </Modal.Header>
         <Modal.Body className="px-6 pb-6 pt-0">
           <div className="flex flex-col items-center gap-y-6 text-center">
             <HiOutlineExclamationCircle className="text-7xl text-red-600" />
             <p className="text-lg text-gray-500 dark:text-gray-300">
-              Are you sure you want to delete this product?
+              ¿Está seguro desea eliminar esta marca?
             </p>
             <div className="flex items-center gap-x-3">
-              <Button color="failure" onClick={() => setOpen(false)}>
-                Yes, I'm sure
+              <Button color="failure" onClick={() => deleteConfirmation()}>
+                Si, Estoy seguro
               </Button>
               <Button color="gray" onClick={() => setOpen(false)}>
-                No, cancel
+                No, cancelar
               </Button>
             </div>
           </div>
@@ -445,7 +472,7 @@ const ProductsTable: FC = function () {
             <Table.Cell className="space-x-2 whitespace-nowrap p-4">
               <div className="flex items-center gap-x-3 w-1/4">
                 <EditProductModal marcaEdit={marca} />
-                <DeleteProductModal />
+                <DeleteProductModal marcaDelete={marca} />
               </div>
             </Table.Cell>
           </Table.Row>

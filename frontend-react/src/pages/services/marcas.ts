@@ -27,3 +27,11 @@ export const putMarca = async (marca: Marca) => {
   });
   return res;
 };
+
+export const deleteMarca = async (id: number) => {
+  const res = await fetch(API + "/marcas/" + id, {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+  });
+  return res;
+};
