@@ -23,6 +23,10 @@ import NavbarSidebarLayout from "../../layouts/navbar-sidebar";
 import { Pagination } from "../users/list";
 import { deleteMarca, postMarca, putMarca } from "../services/marcas";
 import { Marca } from "../../types/api";
+import {
+  DeleteMarcaModalProps,
+  EditMarcaModalProps,
+} from "./interfaces/marcas";
 import { ErrorMessage, Field, Form, Formik, FormikProps } from "formik";
 import { newMarcaSchema, updateMarcaSchema } from "../../schemas/marcas";
 import { MarcasContext } from "../../context/marcas/MarcasContext";
@@ -37,7 +41,7 @@ const MarcasPage: FC = function () {
               <Breadcrumb.Item href="#">
                 <div className="flex items-center gap-x-3">
                   <HiHome className="text-xl" />
-                  <span className="dark:text-white">Home</span>
+                  <span className="dark:text-white">Página principal</span>
                 </div>
               </Breadcrumb.Item>
               <Breadcrumb.Item href="/e-commerce/products">
@@ -50,39 +54,39 @@ const MarcasPage: FC = function () {
             </h1>
           </div>
           <div className="block items-center sm:flex">
-            <SearchForProducts />
+            <SearchForMarca />
             <div className="hidden space-x-1 border-l border-gray-100 pl-2 dark:border-gray-700 md:flex">
               <a
                 href="#"
                 className="inline-flex cursor-pointer justify-center rounded p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
               >
-                <span className="sr-only">Configure</span>
+                <span className="sr-only">Configurar</span>
                 <HiCog className="text-2xl" />
               </a>
               <a
                 href="#"
                 className="inline-flex cursor-pointer justify-center rounded p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
               >
-                <span className="sr-only">Delete</span>
+                <span className="sr-only">Eliminar</span>
                 <HiTrash className="text-2xl" />
               </a>
               <a
                 href="#"
                 className="inline-flex cursor-pointer justify-center rounded p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
               >
-                <span className="sr-only">Purge</span>
+                <span className="sr-only">Detalles</span>
                 <HiExclamationCircle className="text-2xl" />
               </a>
               <a
                 href="#"
                 className="inline-flex cursor-pointer justify-center rounded p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
               >
-                <span className="sr-only">Settings</span>
+                <span className="sr-only">Ajustes</span>
                 <HiDotsVertical className="text-2xl" />
               </a>
             </div>
             <div className="flex w-full items-center sm:justify-end">
-              <AddProductModal />
+              <AddMarcaModal />
             </div>
           </div>
         </div>
@@ -91,7 +95,7 @@ const MarcasPage: FC = function () {
         <div className="overflow-x-auto">
           <div className="inline-block min-w-full align-middle">
             <div className="overflow-hidden shadow">
-              <ProductsTable />
+              <MarcasTable />
             </div>
           </div>
         </div>
@@ -101,7 +105,7 @@ const MarcasPage: FC = function () {
   );
 };
 
-const SearchForProducts: FC = function () {
+const SearchForMarca: FC = function () {
   return (
     <form className="mb-4 sm:mb-0 sm:pr-3" action="#" method="GET">
       <Label htmlFor="products-search" className="sr-only">
@@ -118,7 +122,7 @@ const SearchForProducts: FC = function () {
   );
 };
 
-const AddProductModal: FC = function () {
+const AddMarcaModal: FC = function () {
   const [isOpen, setOpen] = useState(false);
   const { setMarcas } = useContext(MarcasContext);
   return (
@@ -223,10 +227,7 @@ const AddProductModal: FC = function () {
   );
 };
 
-interface EditProductModalProps {
-  marcaEdit: Marca;
-}
-const EditProductModal: FC<EditProductModalProps> = function ({ marcaEdit }) {
+const EditMarcaModal: FC<EditMarcaModalProps> = function ({ marcaEdit }) {
   const [isOpen, setOpen] = useState(false);
   const { marca, setMarca } = useContext(MarcasContext);
   const { setMarcas } = useContext(MarcasContext);
@@ -253,10 +254,7 @@ const EditProductModal: FC<EditProductModalProps> = function ({ marcaEdit }) {
       <Modal onClose={() => setOpen(false)} show={isOpen}>
         <Formik
           initialValues={marca}
-          onSubmit={async (
-            values,
-            { resetForm, setFieldError, setSubmitting }
-          ) => {
+          onSubmit={async (_, { resetForm, setFieldError, setSubmitting }) => {
             const res = await putMarca(marca);
             if (res.status == 200) {
               resetForm();
@@ -370,12 +368,7 @@ const EditProductModal: FC<EditProductModalProps> = function ({ marcaEdit }) {
   );
 };
 
-interface DeleteMarcaModalProps {
-  marcaDelete: Marca;
-}
-const DeleteProductModal: FC<DeleteMarcaModalProps> = function ({
-  marcaDelete,
-}) {
+const DeleteMarcaModal: FC<DeleteMarcaModalProps> = function ({ marcaDelete }) {
   const [isOpen, setOpen] = useState(false);
   const { setMarcas } = useContext(MarcasContext);
 
@@ -431,7 +424,7 @@ const DeleteProductModal: FC<DeleteMarcaModalProps> = function ({
   );
 };
 
-const ProductsTable: FC = function () {
+const MarcasTable: FC = function () {
   const { marcas } = useContext(MarcasContext);
 
   return (
@@ -471,8 +464,8 @@ const ProductsTable: FC = function () {
             </Table.Cell>
             <Table.Cell className="space-x-2 whitespace-nowrap p-4">
               <div className="flex items-center gap-x-3 w-1/4">
-                <EditProductModal marcaEdit={marca} />
-                <DeleteProductModal marcaDelete={marca} />
+                <EditMarcaModal marcaEdit={marca} />
+                <DeleteMarcaModal marcaDelete={marca} />
               </div>
             </Table.Cell>
           </Table.Row>
